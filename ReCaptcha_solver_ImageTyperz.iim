@@ -1,0 +1,59 @@
+'/*
+'----------------------------------------------------------------------------------
+'||						Author  Nowon48											||
+'||						https://www.fiverr.com/nowon48/							||
+'||																				||
+'||						For Some Of My Works 									||
+'||						https://www.youtube.com/c/AutoTasks/videos				||
+'----------------------------------------------------------------------------------
+'*/
+'
+'		SUMMARY
+'		This macro for solving ReCaptcha via ***** To use you need an account and balance as well
+'		
+'		!!! Most important part you should set 3 variable below
+'		
+'		1) your user name
+'		2) your password
+'		3) your submit button in page
+'		
+'		submit button can be found under Recaptchas you need Record your imacro to grab this button code and replace it below.
+'		submit button can be found at the bottom of script
+'
+'
+
+
+SET user "xxxxxxxx"
+
+SET password "yyyyyyy"
+
+SET !EXTRACT_TEST_POPUP NO
+SET !ERRORIGNORE YES
+SET !TIMEOUT_PAGE 1
+URL GOTO=javascript:((function(){var<SP>k=document.getElementsByName('undefined')[0].src.split('?k=')[1].split('&')[0];document.getElementById('g-recaptcha-response').style.display='';document.getElementById('g-recaptcha-response').textContent=k;}))();
+SET !TIMEOUT_PAGE 60
+TAG POS=1 TYPE=TEXTAREA FORM=ID:* ATTR=ID:g-recaptcha-response EXTRACT=TXT
+SET k {{!EXTRACT}}
+SET !EXTRACT NULL
+SET url {{!URLCURRENT}}
+TAB OPEN
+TAB T=2
+URL GOTO=http://captchatypers.com/captchaapi/UploadRecaptchav1.ashx?action=UPLOADCAPTCHA&username={{user}}&password={{password}}&googlekey={{k}}&pageurl={{url}}
+WAIT SECONDS=1
+TAG POS=1 TYPE=* ATTR=TXT:* EXTRACT=TXT
+SET captid {{!EXTRACT}}
+SET !EXTRACT NULL
+URL GOTO= http://captchatypers.com/captchaapi/GetRecaptchaText.ashx?action=GETTEXT&username={{user}}&password={{password}}&Captchaid={{captid}}
+WAIT SECONDS=30
+'Wait until get captcha
+REFRESH
+TAG POS=1 TYPE=* ATTR=TXT:* EXTRACT=TXT
+SET answer {{!EXTRACT}}
+TAB CLOSE
+WAIT SECONDS=0.3
+TAG POS=1 TYPE=TEXTAREA FORM=ID:* ATTR=ID:g-recaptcha-response CONTENT={{answer}}
+'YOUR SUBMİT BUTTON HERE!!!
+'
+TAG POS=1 TYPE=INPUT:SUBMIT FORM=ID:recaptcha-demo-form ATTR=ID:recaptcha-demo-submit
+'
+'end
